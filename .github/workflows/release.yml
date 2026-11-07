@@ -31,7 +31,7 @@ jobs:
       - name: Build mod jar
         env:
           MOD_VERSION: ${{ steps.release_version.outputs.version }}
-        run: ./gradlew build -Pmod_version="$MOD_VERSION"
+        run: bash gradlew build -Pmod_version="$MOD_VERSION"
 
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
