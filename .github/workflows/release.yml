@@ -29,7 +29,9 @@ jobs:
         run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
 
       - name: Build mod jar
-        run: ./gradlew build -Pmod_version="${{ steps.release_version.outputs.version }}"
+        env:
+          MOD_VERSION: ${{ steps.release_version.outputs.version }}
+        run: ./gradlew build -Pmod_version="$MOD_VERSION"
 
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
