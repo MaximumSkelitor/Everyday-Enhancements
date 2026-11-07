@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "DDD",
+    "DGD",
+    "DDD"
+  ],
+  "key": {
+    "D": "minecraft:diamond",
+    "G": "trashcanmodsreal:trash_can_gold"
+  },
+  "result": {
+    "id": "trashcanmodsreal:trash_can_diamond",
+    "count": 1
+  }
+}

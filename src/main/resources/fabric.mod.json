@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "trashcanmodsreal",
+  "version": "${version}",
+  "name": "TrashCanModsReal",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-datagen": [
+      "com.weberpackage.trashcanmodsreal.client.TrashcanmodsrealDataGenerator"
+    ],
+    "client": [
+      "com.weberpackage.trashcanmodsreal.client.TrashcanmodsrealClient"
+    ],
+    "main": [
+      "com.weberpackage.trashcanmodsreal.Trashcanmodsreal"
+    ],
+    "modmenu": [
+      "com.weberpackage.trashcanmodsreal.client.TrashcanmodsrealModMenu"
+    ]
+  },
+  "mixins": [
+    "trashcanmodsreal.mixins.json",
+    {
+      "config": "trashcanmodsreal.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-language-kotlin": ">=${kotlin_loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  },
+  "suggests": {
+    "modmenu": "*"
+  }
+}
