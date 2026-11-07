@@ -1,31 +1,35 @@
 {
   "schemaVersion": 1,
-  "id": "trashcanmodsreal",
+  "id": "everydayenhancements",
   "version": "${version}",
-  "name": "TrashCanModsReal",
+  "name": "Everyday Enhancements",
+  "icon": "assets/everydayenhancements/icon.png",
   "description": "",
-  "authors": [],
-  "contact": {},
+  "authors": ["MaximumSkelitor"],
+  "contact": {
+    "sources": "https://github.com/MaximumSkelitor/Trash-Can-Mod",
+    "issues": "https://github.com/MaximumSkelitor/Trash-Can-Mod/issues/"
+  },
   "license": "All-Rights-Reserved",
   "environment": "*",
   "entrypoints": {
     "fabric-datagen": [
-      "com.weberpackage.trashcanmodsreal.client.TrashcanmodsrealDataGenerator"
+      "com.weberpackage.everydayenhancements.client.EverydayEnhancementsDataGenerator"
     ],
     "client": [
-      "com.weberpackage.trashcanmodsreal.client.TrashcanmodsrealClient"
+      "com.weberpackage.everydayenhancements.client.EverydayEnhancementsClient"
     ],
     "main": [
-      "com.weberpackage.trashcanmodsreal.Trashcanmodsreal"
+      "com.weberpackage.everydayenhancements.EverydayEnhancements"
     ],
     "modmenu": [
-      "com.weberpackage.trashcanmodsreal.client.TrashcanmodsrealModMenu"
+      "com.weberpackage.everydayenhancements.client.EverydayEnhancementsModMenu"
     ]
   },
   "mixins": [
-    "trashcanmodsreal.mixins.json",
+    "everydayenhancements.mixins.json",
     {
-      "config": "trashcanmodsreal.client.mixins.json",
+      "config": "everydayenhancements.client.mixins.json",
       "environment": "client"
     }
   ],

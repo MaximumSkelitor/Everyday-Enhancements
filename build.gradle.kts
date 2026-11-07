@@ -27,7 +27,7 @@ loom {
     splitEnvironmentSourceSets()
 
     mods {
-        register("trashcanmodsreal") {
+        register("everyday_enhancements") {
             sourceSet("main")
             sourceSet("client")
         }

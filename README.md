@@ -1,29 +1,63 @@
-# Trash Can Mod
+<img alt="Everyday Enhancements logo" height="100" src="src/main/resources/assets/everydayenhancements/icon.png" width="100"/>
 
-A Fabric mod for Minecraft **26.3** with iron, gold, and diamond trash cans, configurable FPS/CPS displays, zoom, and singleplayer-only extended reach.
+# Everyday Enhancements
 
-## Build locally
+A Fabric mod for Minecraft Java Edition **26.3**. It adds three trash cans and client-side FPS, CPS, zoom, and singleplayer reach features.
 
-Install JDK 25, then run the Gradle wrapper from the project folder:
+## Download
 
-```text
-Windows:  .\gradlew.bat build
-macOS/Linux: ./gradlew build
-```
+Download the installable jar from the [v1.1-SNAPSHOT release](https://github.com/MaximumSkelitor/Trash-Can-Mod/releases/tag/v1.1-SNAPSHOT):
 
-The distributable mod jar is written to `build/libs/` (the file without `-sources` in its name). The source jar is for developers and is not the one to install.
+**[Download everyday-enhancements-1.1-SNAPSHOT.jar](https://github.com/MaximumSkelitor/Trash-Can-Mod/releases/download/v1.1-SNAPSHOT/everyday-enhancements-1.1-SNAPSHOT.jar)**
 
 ## Install
 
-Install Fabric Loader for Minecraft 26.3 and Fabric API, then put the mod jar from `build/libs/` into the Minecraft `mods` folder. Mod Menu is optional; it adds the in-game settings entry.
+1. Install **Fabric Loader** for Minecraft 26.3 (0.20.1).
+2. Install **Fabric API** for Minecraft 26.3.
+3. Download the mod jar above and put it in your Minecraft `mods` folder.
+4. Launch Minecraft with your Fabric profile.
 
-## GitHub releases
+**Mod Menu is optional.** Install it to open the mod’s settings from the Mods screen. Without Mod Menu, the keybinds still work and can be changed under **Options → Controls → Key Binds → Everyday Enhancements**.
+Install Mod Menu [here](https://github.com/TerraformersMC/ModMenu)
 
-Pushing a version tag beginning with `v` builds the mod and creates a GitHub Release with the installable jar attached. For example, after pushing the project to GitHub:
+## Features
 
-```text
-git tag v1.0.0
-git push origin v1.0.0
+### Trash cans
+
+- Iron Trash Can: 9 slots
+- Gold Trash Can: 18 slots
+- Diamond Trash Can: 27 slots
+
+Items left in the trash can are deleted when its screen closes. The game reports how many items were deleted. This is permanent.
+
+### FPS and CPS counters
+
+Toggle the counters with **F8** (FPS) and **F9** (CPS) by default. Their positions and display settings can be customized separately in **Mod Menu → Everyday Enhancements → FPS/CPS settings**. Each counter has a preview and its own scale, colors, rainbow option, shadow, position, and background settings.
+
+### Zoom
+
+Hold **C** by default to zoom in. While holding it, scroll up to zoom further or down to reduce magnification. Releasing the key smoothly returns to normal view. The key can be rebound in Controls.
+
+### Extended reach
+
+The reach slider is in the mod’s Mod Menu settings. It adds up to 8 blocks of reach and applies only in a private singleplayer world. It is disabled on multiplayer servers and when a singleplayer world is opened to LAN.
+
+## Build from source
+
+Building requires JDK 25. From the project directory, run:
+
+```powershell
+.\gradlew.bat build
 ```
 
-The Actions workflow creates release `v1.0.0` and attaches `trashcanmodsreal-1.0.0.jar`. Users can download that jar from the release page. To publish another build, update `mod_version` in `gradle.properties`, commit the change, and push a new tag with the matching version (for example, `v1.0.1`).
+On macOS or Linux, run:
+
+```sh
+bash gradlew build
+```
+
+The installable jar is in `build/libs/`; choose the jar without `-sources` in its name.
+
+## Releases
+
+The GitHub Actions workflow builds and publishes a release whenever a tag beginning with `v` is pushed. The part after `v` becomes the mod version and jar filename. For example, `v1.0.1` produces `everyday-enhancements-1.0.1.jar`.

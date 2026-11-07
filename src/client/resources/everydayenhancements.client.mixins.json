@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.weberpackage.everydayenhancements.mixin.client",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "TrashCanMouseMixin",
+    "CameraZoomMixin",
+    "PlayerReachMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}
