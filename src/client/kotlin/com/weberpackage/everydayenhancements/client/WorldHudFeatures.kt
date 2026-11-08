@@ -27,6 +27,14 @@ object WorldHudFeatures {
             deathDimension = client.level?.dimension()
         }
         previousHealth = health
+        val marker = deathPosition
+        val level = client.level
+        if (health > 0f && marker != null && level != null && deathDimension == level.dimension() &&
+            player.blockPosition().distManhattan(marker) == 0
+        ) {
+            deathPosition = null
+            deathDimension = null
+        }
     }
 
     fun render(graphics: GuiGraphicsExtractor, client: Minecraft) {
@@ -52,6 +60,7 @@ object WorldHudFeatures {
         val marker = deathPosition ?: return
         if (deathDimension != level.dimension()) return
         val distance = player.blockPosition().distManhattan(marker)
+        if (distance == 0) return
         drawStyled(graphics, client, FpsCounterConfig.death, listOf("Death: ${marker.x}, ${marker.y}, ${marker.z} ($distance blocks)"), offsets)
     }
 

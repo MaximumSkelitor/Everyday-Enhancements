@@ -23,6 +23,8 @@ object FpsCounterConfig {
     val armor = CounterStyleSettings()
     val coordinates = CounterStyleSettings()
     var extraReach = 2.0
+    var fullbright = false
+    var spawnOverlay = false
 
     val positions = listOf("Top Right", "Top Left", "Bottom Right", "Bottom Left")
     val scales = listOf(75, 100, 125, 150, 200)
@@ -52,6 +54,8 @@ object FpsCounterConfig {
         loadStyle(properties, "coordinates", coordinates, true)
         extraReach = properties.getProperty("extraReach", "2.0")
             .toDoubleOrNull()?.coerceIn(0.0, 8.0) ?: 2.0
+        fullbright = properties.getProperty("fullbright", "false").toBoolean()
+        spawnOverlay = properties.getProperty("spawnOverlay", "false").toBoolean()
     }
 
     fun save() {
@@ -64,6 +68,8 @@ object FpsCounterConfig {
             saveStyle(this, "armor", armor)
             saveStyle(this, "coordinates", coordinates)
             setProperty("extraReach", extraReach.toString())
+            setProperty("fullbright", fullbright.toString())
+            setProperty("spawnOverlay", spawnOverlay.toString())
         }
         Files.newOutputStream(configFile).use { output ->
             properties.store(output, "Everyday Enhancements client settings")
@@ -76,7 +82,8 @@ object FpsCounterConfig {
             "$prefix.textScalePercent", properties.getProperty("textScalePercent", "100")
         ).toIntOrNull()
             ?.takeIf { it in scales } ?: 100
-        style.rainbow = properties.getProperty("$prefix.rainbow", properties.getProperty("rainbow", "false")).toBoolean()
+        style.rainbow =
+            properties.getProperty("$prefix.rainbow", properties.getProperty("rainbow", "false")).toBoolean()
         style.shadow = properties.getProperty("$prefix.shadow", properties.getProperty("shadow", "true")).toBoolean()
         style.positionIndex = properties.getProperty(
             "$prefix.positionIndex", properties.getProperty("positionIndex", "0")

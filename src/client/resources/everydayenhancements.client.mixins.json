@@ -6,7 +6,9 @@
   "client": [
     "TrashCanMouseMixin",
     "CameraZoomMixin",
-    "PlayerReachMixin"
+    "PlayerReachMixin",
+    "LightmapMixin",
+    "SpawnOverlayMixin"
   ],
   "injectors": {
     "defaultRequire": 1

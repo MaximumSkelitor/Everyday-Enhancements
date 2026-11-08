@@ -39,6 +39,16 @@ class EverydayEnhancementsClient : ClientModInitializer {
                 category
             )
         )
+        val toggleFullbrightKey = KeyMappingHelper.registerKeyMapping(
+            KeyMapping(
+                "key.everydayenhancements.toggle_fullbright",
+                InputConstants.KEY_B,
+                category
+            )
+        )
+        val toggleSpawnOverlayKey = KeyMappingHelper.registerKeyMapping(
+            KeyMapping("key.everydayenhancements.toggle_spawn_overlay", InputConstants.KEY_N, category)
+        )
 
         ClientTickEvents.END_CLIENT_TICK.register { client ->
             WorldHudFeatures.tick(client)
@@ -70,6 +80,26 @@ class EverydayEnhancementsClient : ClientModInitializer {
                     true
                 )
             }
+
+            while (toggleFullbrightKey.consumeClick()) {
+                FpsCounterConfig.fullbright = !FpsCounterConfig.fullbright
+                FpsCounterConfig.save()
+                client.gui.hud.setOverlayMessage(
+                    Component.translatable(
+                        if (FpsCounterConfig.fullbright) "options.everydayenhancements.fullbright_on"
+                        else "options.everydayenhancements.fullbright_off"
+                    ),
+                    true
+                )
+            }
+            while (toggleSpawnOverlayKey.consumeClick()) {
+                FpsCounterConfig.spawnOverlay = !FpsCounterConfig.spawnOverlay
+                FpsCounterConfig.save()
+                client.gui.hud.setOverlayMessage(
+                    Component.translatable(if (FpsCounterConfig.spawnOverlay) "options.everydayenhancements.spawn_overlay_on" else "options.everydayenhancements.spawn_overlay_off"),
+                    true
+                )
+            }
         }
 
         HudElementRegistry.addLast(
@@ -83,7 +113,13 @@ class EverydayEnhancementsClient : ClientModInitializer {
         ) { graphics, _ ->
             if (FpsCounterConfig.fps.enabled) {
                 val minecraft = Minecraft.getInstance()
-                drawCounter(graphics, "FPS: ${minecraft.getFps()}", lineIndex(FpsCounterConfig.fps), FpsCounterConfig.fps, minecraft)
+                drawCounter(
+                    graphics,
+                    "FPS: ${minecraft.getFps()}",
+                    lineIndex(FpsCounterConfig.fps),
+                    FpsCounterConfig.fps,
+                    minecraft
+                )
             }
         }
 

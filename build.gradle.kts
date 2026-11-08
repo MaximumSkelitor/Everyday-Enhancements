@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.gradle.api.tasks.bundling.AbstractArchiveTask
 
 plugins {
     kotlin("jvm") version "2.4.21"
@@ -13,6 +14,11 @@ group = project.property("maven_group") as String
 base {
     archivesName.set(project.property("archives_base_name") as String)
 }
+
+tasks.named<AbstractArchiveTask>("jar") {
+    archiveFileName.set("${project.property("archives_base_name")}-${project.version}+mc.${project.property("minecraft_version")}.jar")
+}
+
 
 val targetJavaVersion = 25
 java {

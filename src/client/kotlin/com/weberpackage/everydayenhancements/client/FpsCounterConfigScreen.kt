@@ -1,38 +1,32 @@
 package com.weberpackage.everydayenhancements.client
 
+import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphicsExtractor
-import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.AbstractSliderButton
+import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
-import net.fabricmc.loader.api.FabricLoader
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.atan2
-import kotlin.math.ceil
-import kotlin.math.cos
-import kotlin.math.floor
-import kotlin.math.hypot
-import kotlin.math.roundToInt
-import kotlin.math.sin
+import kotlin.math.*
 
 class FpsCounterConfigScreen(private val parent: Screen) : Screen(modTitle()) {
 
     private enum class Page { SELECT_COUNTER, EDIT_FPS, EDIT_CPS, EDIT_BIOME, EDIT_DEATH, EDIT_ARMOR, EDIT_COORDINATES, EDIT_REACH }
 
     private var page = Page.SELECT_COUNTER
+    private var settingsScroll = 0
     private val editingCps get() = page == Page.EDIT_CPS
     private val editingReach get() = page == Page.EDIT_REACH
-    private val style get() = when (page) {
-        Page.EDIT_CPS -> FpsCounterConfig.cps
-        Page.EDIT_BIOME -> FpsCounterConfig.biome
-        Page.EDIT_DEATH -> FpsCounterConfig.death
-        Page.EDIT_ARMOR -> FpsCounterConfig.armor
-        Page.EDIT_COORDINATES -> FpsCounterConfig.coordinates
-        else -> FpsCounterConfig.fps
-    }
+    private val style
+        get() = when (page) {
+            Page.EDIT_CPS -> FpsCounterConfig.cps
+            Page.EDIT_BIOME -> FpsCounterConfig.biome
+            Page.EDIT_DEATH -> FpsCounterConfig.death
+            Page.EDIT_ARMOR -> FpsCounterConfig.armor
+            Page.EDIT_COORDINATES -> FpsCounterConfig.coordinates
+            else -> FpsCounterConfig.fps
+        }
 
     private lateinit var enabledButton: Button
     private lateinit var scaleButton: Button
@@ -54,28 +48,56 @@ class FpsCounterConfigScreen(private val parent: Screen) : Screen(modTitle()) {
         val fullX = width / 2 - fullWidth / 2
 
         if (page == Page.SELECT_COUNTER) {
-            addRenderableWidget(
-                Button.builder(Component.translatable("options.everydayenhancements.tab_fps")) {
-                    page = Page.EDIT_FPS
-                    rebuildWidgets()
-                }.bounds(width / 2 - 100, height / 2 - 70, 200, 20).build()
-            )
-            addRenderableWidget(
-                Button.builder(Component.translatable("options.everydayenhancements.tab_cps")) {
-                    page = Page.EDIT_CPS
-                    rebuildWidgets()
-                }.bounds(width / 2 - 100, height / 2 - 42, 200, 20).build()
-            )
-            addRenderableWidget(Button.builder(Component.translatable("options.everydayenhancements.tab_biome")) { page = Page.EDIT_BIOME; rebuildWidgets() }.bounds(width / 2 - 100, height / 2 - 14, 200, 20).build())
-            addRenderableWidget(Button.builder(Component.translatable("options.everydayenhancements.tab_death")) { page = Page.EDIT_DEATH; rebuildWidgets() }.bounds(width / 2 - 100, height / 2 + 14, 200, 20).build())
-            addRenderableWidget(Button.builder(Component.translatable("options.everydayenhancements.tab_armor")) { page = Page.EDIT_ARMOR; rebuildWidgets() }.bounds(width / 2 - 100, height / 2 + 42, 200, 20).build())
-            addRenderableWidget(Button.builder(Component.translatable("options.everydayenhancements.tab_coordinates")) { page = Page.EDIT_COORDINATES; rebuildWidgets() }.bounds(width / 2 - 100, height / 2 + 70, 200, 20).build())
-            addRenderableWidget(
-                Button.builder(Component.translatable("options.everydayenhancements.tab_reach")) {
-                    page = Page.EDIT_REACH
-                    rebuildWidgets()
-                }.bounds(width / 2 - 100, height / 2 + 98, 200, 20).build()
-            )
+            val colWidth = minOf(155, (width - 48) / 2)
+            val gap = 6
+            val left = (width - colWidth * 2 - gap) / 2
+            val right = left + colWidth + gap
+            val row = minOf(38, ((height - 150) / 5).coerceAtLeast(28))
+            val visibleRows = ((height - 100) / row).coerceAtLeast(1)
+            val start = 38
+            fun setting(text: Component, column: Int, index: Int, action: () -> Unit) {
+                if (index !in settingsScroll until (settingsScroll + visibleRows)) return
+                val x = if (column == 0) left else right
+                addRenderableWidget(Button.builder(text) { action() }
+                    .bounds(x, start + (index - settingsScroll) * row, colWidth, 21).build())
+            }
+            setting(
+                Component.translatable("options.everydayenhancements.tab_fps"),
+                0,
+                0
+            ) {
+                page = Page.EDIT_FPS; rebuildWidgets()
+            }
+            setting(Component.translatable("options.everydayenhancements.tab_cps"), 1, 0) {
+                page = Page.EDIT_CPS; rebuildWidgets()
+            }
+            setting(Component.translatable("options.everydayenhancements.tab_biome"), 0, 1) {
+                page = Page.EDIT_BIOME; rebuildWidgets()
+            }
+            setting(Component.translatable("options.everydayenhancements.tab_death"), 1, 1) {
+                page = Page.EDIT_DEATH; rebuildWidgets()
+            }
+            setting(Component.translatable("options.everydayenhancements.tab_armor"), 0, 2) {
+                page = Page.EDIT_ARMOR; rebuildWidgets()
+            }
+            setting(Component.translatable("options.everydayenhancements.tab_coordinates"), 1, 2) {
+                page = Page.EDIT_COORDINATES; rebuildWidgets()
+            }
+            setting(Component.translatable("options.everydayenhancements.tab_reach"), 0, 3) {
+                page = Page.EDIT_REACH; rebuildWidgets()
+            }
+            setting(featureFullbrightText(), 1, 3) {
+                FpsCounterConfig.fullbright = !FpsCounterConfig.fullbright
+                FpsCounterConfig.save()
+                rebuildWidgets()
+            }
+            setting(featureSpawnText(), 0, 4) {
+                FpsCounterConfig.spawnOverlay = !FpsCounterConfig.spawnOverlay
+                FpsCounterConfig.save()
+                rebuildWidgets()
+            }
+            addRenderableWidget(Button.builder(Component.translatable("gui.done")) { minecraft.gui.setScreen(parent) }
+                .bounds(left, height - 30, colWidth * 2 + gap, 21).build())
             return
         }
 
@@ -96,7 +118,6 @@ class FpsCounterConfigScreen(private val parent: Screen) : Screen(modTitle()) {
             )
             return
         }
-
 
         val startY = 38
         val rowStep = minOf(25, ((height - 170).coerceAtLeast(105)) / 7)
@@ -134,7 +155,16 @@ class FpsCounterConfigScreen(private val parent: Screen) : Screen(modTitle()) {
             saveAndRefresh()
         }
         opacitySlider = addRenderableWidget(OpacitySlider(fullX, startY + rowStep * 6, fullWidth, controlHeight, style))
-        listOf(enabledButton, scaleButton, rainbowButton, shadowButton, positionButton, textColorButton, backgroundButton, marginButton).forEach { it.height = controlHeight }
+        listOf(
+            enabledButton,
+            scaleButton,
+            rainbowButton,
+            shadowButton,
+            positionButton,
+            textColorButton,
+            backgroundButton,
+            marginButton
+        ).forEach { it.height = controlHeight }
         previewY = opacitySlider.y + opacitySlider.height + 4
         previewHeight = if (page == Page.EDIT_ARMOR) 92 else 46
 
@@ -170,6 +200,20 @@ class FpsCounterConfigScreen(private val parent: Screen) : Screen(modTitle()) {
 
     override fun onClose() {
         minecraft.gui.setScreen(parent)
+    }
+
+    override fun mouseScrolled(mouseX: Double, mouseY: Double, horizontalAmount: Double, verticalAmount: Double): Boolean {
+        if (page == Page.SELECT_COUNTER) {
+            val row = minOf(38, ((height - 150) / 5).coerceAtLeast(28))
+            val visibleRows = ((height - 100) / row).coerceAtLeast(1)
+            val next = (settingsScroll - verticalAmount.toInt()).coerceIn(0, (5 - visibleRows).coerceAtLeast(0))
+            if (next != settingsScroll) {
+                settingsScroll = next
+                rebuildWidgets()
+                return true
+            }
+        }
+        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)
     }
 
     private fun button(text: Component, x: Int, y: Int, width: Int, action: () -> Unit): Button =
@@ -208,7 +252,7 @@ class FpsCounterConfigScreen(private val parent: Screen) : Screen(modTitle()) {
 
     private fun drawPreview(graphics: GuiGraphicsExtractor) {
         val minecraft = Minecraft.getInstance()
-        val previewWidth = minOf(500, width - 40)
+        val previewWidth = settingsGridWidth()
         val x = (width - previewWidth) / 2
         val y = previewY
         graphics.fill(x, y, x + previewWidth, y + previewHeight, 0x90000000.toInt())
@@ -229,7 +273,7 @@ class FpsCounterConfigScreen(private val parent: Screen) : Screen(modTitle()) {
             Page.EDIT_DEATH -> "Death: 120, 64, -30 (42 blocks)"
             Page.EDIT_ARMOR -> "Diamond Chestplate: 85%"
             Page.EDIT_COORDINATES -> "XYZ: 120, 64, -30"
-            else -> "FPS: ${minecraft.getFps()}"
+            else -> "FPS: ${minecraft.fps}"
         }
         val sampleWidth = ceil(font.width(sample) * style.textScalePercent / 100.0).toInt()
         val sampleHeight = ceil(font.lineHeight * style.textScalePercent / 100.0).toInt()
@@ -237,12 +281,18 @@ class FpsCounterConfigScreen(private val parent: Screen) : Screen(modTitle()) {
             graphics,
             sample,
             x + (previewWidth - sampleWidth) / 2,
-            y + 20 + (24 - sampleHeight) / 2,
+            y + (24 - sampleHeight) / 2,
             style
         )
     }
 
-    private fun drawPreviewCounter(graphics: GuiGraphicsExtractor, text: String, x: Int, y: Int, settings: CounterStyleSettings) {
+    private fun drawPreviewCounter(
+        graphics: GuiGraphicsExtractor,
+        text: String,
+        x: Int,
+        y: Int,
+        settings: CounterStyleSettings
+    ) {
         val scale = settings.textScalePercent / 100.0f
         val margin = settings.backgroundMargin
         val color = displayColor(settings)
@@ -262,6 +312,8 @@ class FpsCounterConfigScreen(private val parent: Screen) : Screen(modTitle()) {
         }
     }
 
+    private fun settingsGridWidth(): Int = minOf(155, (width - 48) / 2) * 2 + 6
+
     private fun displayColor(settings: CounterStyleSettings): Int = if (settings.rainbow) {
         val hue = (System.currentTimeMillis() % 3000L).toFloat() / 3000.0f
         hsvToColor(hue, 1f, 1f)
@@ -272,6 +324,12 @@ class FpsCounterConfigScreen(private val parent: Screen) : Screen(modTitle()) {
     private fun enabledText() = Component.translatable(
         if (style.enabled) "options.everydayenhancements.enabled" else "options.everydayenhancements.disabled"
     )
+
+    private fun featureFullbrightText() =
+        Component.translatable(if (FpsCounterConfig.fullbright) "options.everydayenhancements.fullbright_on" else "options.everydayenhancements.fullbright_off")
+
+    private fun featureSpawnText() =
+        Component.translatable(if (FpsCounterConfig.spawnOverlay) "options.everydayenhancements.spawn_overlay_on" else "options.everydayenhancements.spawn_overlay_off")
 
     private fun scaleText() = Component.translatable(
         "options.everydayenhancements.text_scale", style.textScalePercent
@@ -305,10 +363,15 @@ class FpsCounterConfigScreen(private val parent: Screen) : Screen(modTitle()) {
 
 private class OpacitySlider(x: Int, y: Int, width: Int, height: Int, private val settings: CounterStyleSettings) :
     AbstractSliderButton(x, y, width, height, Component.empty(), 1.0 - (settings.backgroundColor ushr 24) / 255.0) {
-    init { updateMessage() }
-    public override fun updateMessage() {
-        message = Component.translatable("options.everydayenhancements.background_transparency", (value * 100).roundToInt())
+    init {
+        updateMessage()
     }
+
+    public override fun updateMessage() {
+        message =
+            Component.translatable("options.everydayenhancements.background_transparency", (value * 100).roundToInt())
+    }
+
     override fun applyValue() {
         val alpha = ((1.0 - value) * 255).roundToInt().coerceIn(0, 255)
         settings.backgroundColor = (alpha shl 24) or (settings.backgroundColor and 0xFFFFFF)
@@ -341,6 +404,9 @@ private class ReachSlider(x: Int, y: Int, width: Int, height: Int) : AbstractSli
     override fun updateMessage() {
         val extra = (value * MAX_EXTRA_REACH * 4.0).roundToInt() / 4.0
         message = Component.translatable("options.everydayenhancements.extra_reach", extra)
+        if (message == Component.translatable("options.everydayenhancements.extra_reach", 2.0)) {
+            message = Component.translatable("options.everydayenhancements.extra_reach_default")
+        }
     }
 
     override fun applyValue() {
@@ -395,7 +461,13 @@ private class ColorPickerScreen(
             val angle = h * 2.0 * PI
             val x = (centerX + cos(angle) * radius).toInt()
             val y = (centerY + sin(angle) * radius).toInt()
-            graphics.fill(x - segmentSize / 2, y - segmentSize / 2, x + segmentSize / 2, y + segmentSize / 2, hsvToColor(h, 1f, 1f))
+            graphics.fill(
+                x - segmentSize / 2,
+                y - segmentSize / 2,
+                x + segmentSize / 2,
+                y + segmentSize / 2,
+                hsvToColor(h, 1f, 1f)
+            )
         }
 
         val squareSize = 100

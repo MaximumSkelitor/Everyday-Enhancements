@@ -26,7 +26,9 @@ jobs:
 
       - name: Get release version
         id: release_version
-        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          echo "minecraft_version=$(sed -n 's/^minecraft_version=//p' gradle.properties)" >> "$GITHUB_OUTPUT"
 
       - name: Build mod jar
         env:
@@ -36,6 +38,7 @@ jobs:
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          generate_release_notes: true
+          body_path: CHANGELOG.md
+          fail_on_unmatched_files: true
           prerelease: ${{ contains(github.ref_name, '-SNAPSHOT') }}
-          files: build/libs/everyday-enhancements-${{ steps.release_version.outputs.version }}.jar
+          files: build/libs/everyday-enhancements-${{ steps.release_version.outputs.version }}+mc.${{ steps.release_version.outputs.minecraft_version }}.jar
