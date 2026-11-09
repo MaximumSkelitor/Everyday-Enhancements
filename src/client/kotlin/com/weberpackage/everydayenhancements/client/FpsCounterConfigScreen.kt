@@ -1,6 +1,5 @@
 package com.weberpackage.everydayenhancements.client
 
-import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.AbstractSliderButton
@@ -380,13 +379,7 @@ private class OpacitySlider(x: Int, y: Int, width: Int, height: Int, private val
 }
 
 private fun modTitle(): Component {
-    val version = FabricLoader.getInstance()
-        .getModContainer("everydayenhancements")
-        .orElseThrow()
-        .metadata
-        .version
-        .friendlyString
-    return Component.literal("Everyday Enhancements - v$version")
+    return Component.literal("Everyday Enhancements")
 }
 
 private class ReachSlider(x: Int, y: Int, width: Int, height: Int) : AbstractSliderButton(

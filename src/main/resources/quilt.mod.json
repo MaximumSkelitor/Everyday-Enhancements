@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "everydayenhancements",
+  "version": "${version}",
+  "name": "Everyday Enhancements",
+  "icon": "assets/everydayenhancements/icon.png",
+  "description": "Adds trash cans and quality-of-life client features.",
+  "authors": ["MaximumSkelitor"],
+  "contact": {
+    "sources": "https://github.com/MaximumSkelitor/Trash-Can-Mod",
+    "issues": "https://github.com/MaximumSkelitor/Trash-Can-Mod/issues/"
+  },
+  "license": "All-Rights-Reserved",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.weberpackage.everydayenhancements.EverydayEnhancementsFabric"
+    ],
+    "client": [
+      "com.weberpackage.everydayenhancements.client.EverydayEnhancementsClient"
+    ]
+  },
+  "mixins": [
+    "everydayenhancements.mixins.json",
+    "everydayenhancements.client.mixins.json"
+  ],
+  "depends": {
+    "quilt_base": "*",
+    "minecraft": "~${minecraft_version}",
+    "java": ">=25"
+  },
+  "suggests": {
+    "modmenu": "*"
+  }
+}
